@@ -61,31 +61,31 @@ class AnalyticsService:
             total_votes = self.db.query(func.count(models.Vote.id))\
                 .join(models.Option)\
                 .join(models.Poll)\
-            .filter(models.Poll.owner_id == user_id)\
-            .scalar() or 0
-        
-        # Calculate total views (assuming view_count field exists)
-        total_views = sum(getattr(poll, 'view_count', 0) for poll in user_polls)
-        
-        # Calculate average engagement rate
-        avg_engagement = self._calculate_average_engagement_rate(user_polls)
-        
-        # Find most popular poll
-        most_popular = self._get_most_popular_poll(user_polls)
-        
-        # Get recent activity
-        recent_activity = self._get_recent_activity(user_id, limit=10)
-        
-        # Count polls created this month
-        current_month_start = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        polls_this_month = self.db.query(func.count(models.Poll.id))\
-            .filter(
-                and_(
-                    models.Poll.owner_id == user_id,
-                    models.Poll.created_at >= current_month_start
-                )
-            ).scalar() or 0
-        
+                .filter(models.Poll.owner_id == user_id)\
+                .scalar() or 0
+            
+            # Calculate total views (assuming view_count field exists)
+            total_views = sum(getattr(poll, 'view_count', 0) for poll in user_polls)
+            
+            # Calculate average engagement rate
+            avg_engagement = self._calculate_average_engagement_rate(user_polls)
+            
+            # Find most popular poll
+            most_popular = self._get_most_popular_poll(user_polls)
+            
+            # Get recent activity
+            recent_activity = self._get_recent_activity(user_id, limit=10)
+            
+            # Count polls created this month
+            current_month_start = datetime.now(UTC).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            polls_this_month = self.db.query(func.count(models.Poll.id))\
+                .filter(
+                    and_(
+                        models.Poll.owner_id == user_id,
+                        models.Poll.created_at >= current_month_start
+                    )
+                ).scalar() or 0
+            
             return AnalyticsOverview(
                 total_polls=total_polls,
                 total_votes_received=total_votes,
